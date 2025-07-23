@@ -1,6 +1,8 @@
 const addUserBtn = document.getElementById("adduser");
+const BtnText = addUserBtn.innerText;
 const userNameTextField = document.getElementById("username");
 const recordsDisplay = document.getElementById("records");
+let edit_id = null;
 
 let userArray = [];
 let objStr = localStorage.getItem("user");
@@ -11,15 +13,23 @@ if (objStr != null) {
 Displayinfo();
 addUserBtn.onclick = () => {
   const name = userNameTextField.value;
-  userArray.push({ name: name });
+  if (edit_id != null) {
+    // edit
+    userArray.splice(edit_id, 1, { name: name });
+    edit_id = null;
+  } else {
+    //insert
+    userArray.push({ name: name });
+  }
   Saveinfo(userArray);
   userNameTextField.value = "";
-  Displayinfo();
+  addUserBtn.innerText = BtnText;
 };
 
 function Saveinfo(userArray) {
   let str = JSON.stringify(userArray); // convert array/object  into string ...it is javascript builtIn function
   localStorage.setItem("user", str);
+  Displayinfo();
 }
 
 function Displayinfo() {
@@ -35,11 +45,12 @@ function Displayinfo() {
 }
 
 function Editinfo(id) {
-  alert(id);
+  edit_id = id;
+  userNameTextField.value = userArray[id].name;
+  addUserBtn.innerText = "Save Changes";
 }
 
 function Deleteinfo(id) {
   userArray.splice(id, 1);
   Saveinfo(userArray);
-  Displayinfo();
 }
